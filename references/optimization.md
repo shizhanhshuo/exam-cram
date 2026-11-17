@@ -99,6 +99,50 @@ CHANGELOG 条目必须写明**触发原因**，不能只写"优化了讲法"：
 
 ---
 
+## 同步到远端仓库（第 5 步，必做）
+
+**优化只改本地 = 优化没发生。** 下一个人下载到的还是旧坑。
+
+默认仓库：`github.com/shizhanhshuo/exam-cram`（main 分支 + 每版一个 Release）
+
+### 标准流程
+
+```
+1. 改本地：~/.workbuddy/skills/exam-cram/
+2. 升 version + 写 CHANGELOG
+3. 同步到本地仓库副本：exam-cram-repo/
+4. 打包：dist/exam-cram.zip（必须排除 .git，用 Python 重建，不要原地覆盖）
+5. 提交：blob → tree → commit → PATCH ref
+6. 打 Release + 上传 zip
+7. 回读远程文件确认版本号已更新
+```
+
+### 踩过的坑（照这个避开）
+
+| 坑 | 表现 | 正确做法 |
+| --- | --- | --- |
+| `git push` 不通 | 8000+ 端口拒绝 / 443 超时（代理与墙） | 全程走 GitHub REST API：`ref → base_tree → POST /git/blobs → POST /git/trees → POST /git/commits → PATCH /git/refs/heads/main` |
+| 空仓库报 409 | `Git Repository is empty` | 先 `PUT /contents/README.md` 造第一个 commit，再走 tree/commit |
+| 中文 JSON 乱码 | 提交后中文变问号 | 必须 `[System.Text.Encoding]::UTF8.GetBytes($json)` |
+| 打包带上 `.git` | zip 体积暴涨、解压出乱码目录 | 用 Python `shutil.copytree(ignore=shutil.ignore_patterns('.git'))` 重建，不要 `Copy-Item -Recurse` 覆盖 |
+| 原地覆盖残留旧文件 | dist 里出现已删除的目录 | 先 `rmtree` 再 `copytree` |
+| 只提交不打包 | 仓库是新的，zip 是旧的 | 每次都必须重建 zip 并重新上传 Release asset |
+
+### 取 token（shizhanhshuo 账号）
+
+```powershell
+$in = "protocol=https`nhost=github.com`n`n"
+$t = (($in | git credential fill 2>&1) | Where-Object { $_ -match '^password=' }) -replace '^password=',''
+```
+
+**token 不进任何文件，也不写进 CHANGELOG。**
+
+### 提交后必须做的事
+
+回读一次远程 `SKILL.md`，确认 `version:` 行已经是新版本号。**不确认就等于没提交。**
+
+---
+
 ## 实战复盘记录
 
 按时间倒序。每次实战加一条。

@@ -75,6 +75,46 @@ exam-cram 针对这两件事分别下手。
 
 全部过完还要做一次收束：一张全景图 + 一张「只有一列不同」的总表 + 一个通用四问。总表按 **「多走的那段路怎么算」** 组织，不按章节组织——这样能让人自己看出「三个模型公式完全一样」。
 
+## 五类学科，五套讲法
+
+这是 v1.4.0 补的一层。原因很直接：同一套话术在物理上有效，在法学上会失效。
+
+| 族 | 典型课 | 真正卡在哪 | 分从哪来 |
+|---|---|---|---|
+| **A** 计算理科 | 高数、大物、电路 | 符号层 + 实物层（不是公式） | 步骤分、统一单位 |
+| **B** 图形经管 | 微观/宏观、金融 | 术语太像 + 图形语言 | 作图踩点、简答三段 |
+| **C** 记忆人文 | 思政、法律、教育 | 名词精确度 + 答题结构 | 分点作答、踩点给分 |
+| **D** 代码工程 | 数据结构、网络 | 机制 + 手写能力（看懂≠会写） | 手写算法、画结构图 |
+| **E** 医学机制 | 解剖、生理、病理 | 名词量 + 机制顺序（记不住其实是记混了） | 按环给分、成对对比 |
+
+五族对应不同的**一秒题形态**（"变大变小" / "往哪边动" / "属于哪一类" / "输出是什么" / "升高还是降低"）、不同的**必画图**、不同的**保底写法**和**时间分配比例**。
+
+判定优先级是 **材料特征 > 课程名 > 用户描述** —— 课程名有迷惑性，「经济数学」其实属于 A。
+
+跨族课（生化、计量经济、医学统计）走「主族 + 副族」，主族定骨架，副族补差异。
+
+## 你的课件可能印错了
+
+这是 v1.4.0 补的第二层。上传的 PPT、讲义、复习提纲，是学生手上最像「官方」的东西，**但它不等于真理**。
+
+实际读材料时遇到过：公式上下标在转 PDF 时丢失、中英两版对同一概念的表述不一致、例题数字代回去算不通。
+
+所以课件一律当「待校验线索」：
+
+| 级 | 做什么 | 什么时候 |
+|---|---|---|
+| **V1 内部一致性** | PPT 前后是否矛盾、多版之间是否冲突、**例题自己代一遍** | 拿到材料必做 |
+| **V2 权威对照** | 教材原书 > 高校课程页（.edu）> 权威百科；≥2 个独立来源一致才算确认 | 讲某个考点前 |
+| **V3 真题对照** | 真题答法优先于 PPT 表述 | 有卷子时 |
+
+发现冲突后按五类处理（笔误 / 版本差异 / 学术争议 / 表述简化 / 无法判断），每类都明确要不要告诉学生。
+
+**三条绝对禁止**：静默按错的讲 ／ 静默纠正不讲 ／ 编造「教材原文」「本校真题」。
+
+> 第二条最容易被忽略：有些错误 PPT 是无害的（老师自己也这么讲、考试也这么答）。这时**不该改，但该提醒**——"课件这里写的是 A，学术上更准确是 B，你这门课按 A 答就行，别改。"
+
+原则是**讲到哪，核到哪**，不做全量预校验。十份课件全核一遍，时间成本超过复习本身。
+
 ## 三个反直觉的设定
 
 **一、把你的时间打六折。**
@@ -134,12 +174,14 @@ git clone https://github.com/shizhanhshuo/exam-cram.git "$env:USERPROFILE\.workb
 
 | 文件 | 作用 |
 |---|---|
-| `00-作战计划.md` | 模式、时间块分配、目标、要放弃什么 |
+| `00-作战计划.md` | 学科族判定、模式、时间块分配、目标、要放弃什么 |
 | `01-考点热力表.md` | 全部考点排序，划 60% / 80% / 95% 三条线 |
 | `01b-模型卡片/<模型>.md` | 按七步写的单模型讲解 + 符号表（零基础主材料） |
 | `02-讲题卡片/<考点>.md` | 逐题六段式讲解 |
 | `03-自测记录.md` | 每题对错、错因归类 |
 | `04-保底清单.md` | 考前 20 分钟只看这一页 |
+| `materials.md` | 材料清单、可信度分级、**材料校验记录** |
+| `05-勘误表.md` | 课件里**会影响得分**的错误（只在疑点会改变答案时出） |
 
 ## 它是怎么排序的
 
@@ -172,28 +214,32 @@ Score = 0.35 × 频率 + 0.30 × 分值占比 + 0.20 × 新近度 + 0.15 × 章�
 - **不保证押中。** 考点排序是启发式推断，不是预测。它做的是把有限时间分到期望收益更高的地方，仅此而已。
 - **「你们学校」的真题经常搜不到。** 大学专业课卷子基本不外流，公网命中率约 20–40%。搜不到时会明说，改用教材课后题和同教材异校卷替代，**不会编一份卷子出来**。
 - **网上大量「2026 年 XX 期末试卷」是假的。** 没有校名、题题带解析、机械排列的那种，多半是题库拼的。技能里加了识别规则，见到就排除。
+- **它不保证你老师给的课件是对的。** 所以会先核再讲，发现问题是会明说的——包括「课件写错了」和「课件没错但学术上有另一种说法」这两种。核不到的会直接说「我不确定，以你们教材为准」，不会硬给一个数。
 - **它不能替代你真的动手做题。** 看懂了和会做之间隔着一次动手。自测环节就是防这个的，但你可以骗过它。
 
 ## 目录结构
 
 ```
 exam-cram/
-├── SKILL.md                  # 主流程 + 八条红线
+├── SKILL.md                  # 主流程 + 十条红线
 ├── references/
-│   ├── modes.md              # 时间分层、模式切换、睡眠规则
-│   ├── sourcing.md           # 双路径取题、可信度分级、假真题识别
-│   ├── analysis.md           # 考点标签、加权排序、分数线、错因分类
+│   ├── subjects.md           # 五族学科分层：卡点、一看题、必画图、保底写法
+│   ├── verification.md       # 材料校验：三级核验、冲突决策树、勘误模板
 │   ├── models.md             # 按模型过一遍的七步法（零基础核心）
 │   ├── foundations.md        # 零基础补课方法论、五层诊断阶梯
 │   ├── teaching.md           # 六段式讲题法
-│   └── optimization.md       # 自优化机制 + 每轮实战的复盘记录
+│   ├── modes.md              # 时间分层、模式切换、睡眠规则
+│   ├── sourcing.md           # 双路径取题、可信度分级、假真题识别
+│   ├── analysis.md           # 考点标签、加权排序、分数线、错因分类
+│   └── optimization.md       # 自优化机制 + 每次实战的复盘记录
 └── assets/                   # 五份输出模板
 ```
 
-三份最值得看：
+四份最值得看：
 
+- `references/subjects.md` —— 五族学科各卡在哪一层、该画什么图、时间怎么分。**换学科前先看这份**
+- `references/verification.md` —— 课件出错时怎么判、怎么讲。含三条绝对禁止
 - `references/models.md` —— 按模型过的七步法，含九个波动光学模型的完整讲法、符号表规范、一秒题设计规则
-- `references/teaching.md` —— 六段式讲题法，含完整好坏对照示例
 - `references/optimization.md` —— 这个技能怎么长出来的。每次实战的卡点、归因、改法都在里面，包括失败的那些
 
 ## 许可
@@ -209,4 +255,4 @@ exam-cram/
 
 ---
 
-**English TL;DR** — exam-cram is an Agent Skill for last-minute exam prep. Give it a course and a deadline; it locates past papers (or falls back to textbook problems), ranks topics by `0.35×frequency + 0.30×marks + 0.20×recency + 0.15×chapter weight`, draws 60/80/95% score lines, then teaches each question in six passes — translation, placement, 30-second prerequisite, walkthrough with **common-pitfall callouts**, variant predictions, and a minimum-credit fallback. It deliberately cuts your self-reported study time by 40%, tells you what to skip, and will tell you to go to sleep. MIT licensed.
+**English TL;DR** — exam-cram is an Agent Skill for last-minute exam prep. Give it a course and a deadline; it locates past papers (or falls back to textbook problems), ranks topics by `0.35×frequency + 0.30×marks + 0.20×recency + 0.15×chapter weight`, draws 60/80/95% score lines, then teaches each question in six passes — translation, placement, 30-second prerequisite, walkthrough with **common-pitfall callouts**, variant predictions, and a minimum-credit fallback. It routes to one of five subject archetypes (computational science / graph-based econ / memorization humanities / code engineering / mechanism-heavy medicine), each with its own probe format, required diagrams and answer scaffolding. Uploaded slides are treated as **unverified leads**: internal consistency and worked-example recomputation first, authoritative cross-check for load-bearing claims, conflict resolved through an explicit five-way decision tree — never silently teaching a wrong formula. It deliberately cuts your self-reported study time by 40%, tells you what to skip, and will tell you to go to sleep. MIT licensed.
