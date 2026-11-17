@@ -75,6 +75,36 @@ exam-cram 针对这两件事分别下手。
 
 全部过完还要做一次收束：一张全景图 + 一张「只有一列不同」的总表 + 一个通用四问。总表按 **「多走的那段路怎么算」** 组织，不按章节组织——这样能让人自己看出「三个模型公式完全一样」。
 
+## 先查本校库，再搜全网
+
+这是 v1.5.0 补的一层。顺序反了，后面全错。
+
+**"本校"不是一个形容词，是三个可检索的字段：学期、学院、考试阶段。**
+
+任何材料只要同时具备这三样，可信度就是最高级；缺任何一样，就要打折。
+
+北邮的场景（[BYR Docs](https://wiki.byrdocs.org)，实测可用）：
+
+| 入口 | 用途 |
+|---|---|
+| `byrdocs.org/?c=test&q=<课程名>` | 搜试卷 |
+| `byrdocs.org/?q=<关键词>` | 搜全库，试卷 + 教材一起 |
+| `wiki.byrdocs.org/exam/<学期>-<课程>-<期中｜期末>` | 文字版题目，免 OCR |
+
+所以在开始之前，技能会先问三件事——**学院、年级、课程全名**：
+
+| 信息 | 真正的作用 | 缺了会怎样 |
+|---|---|---|
+| **学院** | 决定**哪份卷子是你的** | 同一门「数据结构」，计算机学院、电子工程学院、国际学院、未来学院各有各的卷子。选错等于拿别人的考纲复习 |
+| **年级 + 当前学期** | 推算这门课开在第几学期，**锁定该看哪几年** | 会去翻五六年前的卷子，命题风格早变了 |
+| **课程全名** | 同一门课常有多个叫法 | 搜不到，误判成"库里没有" |
+
+> **年级的用法是"缩小批次"，不是"挑卷子"。** 大三上要考一门大二下开的课，就重点看两年前的那一批。选哪份卷子靠学院，看哪几年靠年级。
+
+顺带一件事：库里还有**教材原书**（带出版社、ISBN、版次），这是做"课件对不对"交叉验证最省事的来源——能确认是不是同一版。
+
+不是北邮的学生，按同一思路找（`<学校> 试卷库`、`site:edu.cn <学校> <课程> 试卷`）。判定标准一样：能不能拿到「学期 + 学院 + 阶段」这三样。
+
 ## 五类学科，五套讲法
 
 这是 v1.4.0 补的一层。原因很直接：同一套话术在物理上有效，在法学上会失效。
@@ -158,6 +188,10 @@ git clone https://github.com/shizhanhshuo/exam-cram.git "$env:USERPROFILE\.workb
 
 > 用 exam-cram 帮我复习《管理会计》，11 月 12 号上午考，还剩 5 天，每天能学 6 小时，目标及格。卷子在附件里。
 
+**报了学院和年级（会先查本校试卷库）**
+
+> exam-cram，复习《数据结构》，北邮计算机学院，大二上，11 月 20 号考，还剩 4 天，每天 5 小时，稳过就行。
+
 **一份卷子都没有**
 
 > exam-cram，复习《数据结构》，XX 大学，教材是严蔚敏版，后天考，实际只有 8 小时，能过就行。卷子我搞不到。
@@ -221,7 +255,7 @@ Score = 0.35 × 频率 + 0.30 × 分值占比 + 0.20 × 新近度 + 0.15 × 章�
 
 ```
 exam-cram/
-├── SKILL.md                  # 主流程 + 十条红线
+├── SKILL.md                  # 主流程 + 十一条红线
 ├── references/
 │   ├── subjects.md           # 五族学科分层：卡点、一看题、必画图、保底写法
 │   ├── verification.md       # 材料校验：三级核验、冲突决策树、勘误模板
@@ -255,4 +289,4 @@ exam-cram/
 
 ---
 
-**English TL;DR** — exam-cram is an Agent Skill for last-minute exam prep. Give it a course and a deadline; it locates past papers (or falls back to textbook problems), ranks topics by `0.35×frequency + 0.30×marks + 0.20×recency + 0.15×chapter weight`, draws 60/80/95% score lines, then teaches each question in six passes — translation, placement, 30-second prerequisite, walkthrough with **common-pitfall callouts**, variant predictions, and a minimum-credit fallback. It routes to one of five subject archetypes (computational science / graph-based econ / memorization humanities / code engineering / mechanism-heavy medicine), each with its own probe format, required diagrams and answer scaffolding. Uploaded slides are treated as **unverified leads**: internal consistency and worked-example recomputation first, authoritative cross-check for load-bearing claims, conflict resolved through an explicit five-way decision tree — never silently teaching a wrong formula. It deliberately cuts your self-reported study time by 40%, tells you what to skip, and will tell you to go to sleep. MIT licensed.
+**English TL;DR** — exam-cram is an Agent Skill for last-minute exam prep. Give it a course and a deadline; **it checks your own university's exam archive first** (school + department + year-grade are three searchable fields, not background info), then falls back to textbook problems and cross-school papers. It ranks topics by `0.35×frequency + 0.30×marks + 0.20×recency + 0.15×chapter weight`, draws 60/80/95% score lines, then teaches each question in six passes — translation, placement, 30-second prerequisite, walkthrough with **common-pitfall callouts**, variant predictions, and a minimum-credit fallback. It routes to one of five subject archetypes (computational science / graph-based econ / memorization humanities / code engineering / mechanism-heavy medicine), each with its own probe format, required diagrams and answer scaffolding. Uploaded slides are treated as **unverified leads**: internal consistency and worked-example recomputation first, authoritative cross-check for load-bearing claims, conflict resolved through an explicit five-way decision tree — never silently teaching a wrong formula. It deliberately cuts your self-reported study time by 40%, tells you what to skip, and will tell you to go to sleep. MIT licensed.
