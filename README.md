@@ -145,16 +145,69 @@ exam-cram 针对这两件事分别下手。
 
 原则是**讲到哪，核到哪**，不做全量预校验。十份课件全核一遍，时间成本超过复习本身。
 
-## 三个反直觉的设定
+## 默认不问时间
 
-**一、把你的时间打六折。**
-你说「还剩 3 天每天能学 10 小时」，它算出来是 9.6 小时。学生普遍高估 2–3 倍，不折一下，计划从第一天就是假的。
+这是 v1.6.0 改的，也是被用户当场指出来的一条。
 
-**二、明确告诉你放弃什么。**
-考点表里有一档叫 ⚪ 放弃，会把「哪几章不用看、省下多少小时」写出来。对突击的人来说，知道不学什么比知道学什么更值钱。
+原来开局会问「还剩几天、每天能学几小时」，然后打六折算出「你其实只有 9.6 小时」，再据此做取舍、劝你睡觉。
 
-**三、会劝你去睡觉。**
-边际收益低于 1 分/小时、或者距考试不足 8 小时，它会直接说「剩下的放弃，去睡」。通宵多学 4 小时换考场反应下降 30%，净亏。
+**跑了两门课之后发现，这套东西一次都没真正生效**：
+
+| 环节 | 设计意图 | 实际发生 |
+|---|---|---|
+| 问时间 | 判定急救 / 冲刺 / 常规 | 问了，但后面按知识点往下走，再没回头看这个数 |
+| 打六折 | 制造紧迫感、指导取舍 | 只制造了一次焦虑，没指导任何决策 |
+| 分数账本 | 决定何时停手 | 从没触发过 |
+| 劝你睡觉 | 防止通宵 | 从没说过，因为根本没有时间约束 |
+
+根因很简单：**真实的学习是「一条一条往下走」的，不是「按小时切块分配」的。** 时间分层是为「考前 8 小时急救」那种极端场景设计的，但绝大多数使用场景并不是那个。
+
+所以现在：
+
+- **默认不问时间**，不算小时，不做分值取舍，不劝停，按知识点顺序往下走
+- 时间分层能力**完整保留**，但只在你自己说出「只剩两天」「今晚必须看完」这类话时才启用
+- 判定标准写死为「用户主动提」，并且补了一句：**问了才说的不算主动提**
+
+## 先梳理，再排序
+
+v1.6.0 之前只做「排序」——给一张按分值排好的考点表。问题是学生拿到这张表，不知道这些考点之间什么关系，换个问法就找不到该用哪一块。
+
+所以 Stage 2 拆成了两步：**2a 梳理 → 2b 排序**。
+
+梳理产出的是三样东西：
+
+**① 一条主线**——这门课在讲什么，一句话。并判定它的结构类型：
+
+| 结构 | 目录长什么样 | 主线怎么画 |
+|---|---|---|
+| 因果链 | 多「形成 / 影响 / 导致」 | 箭头串起来，每环写为什么 |
+| 流程链 | 多「步骤 / 流程」 | 编号步骤，每步写输入输出 |
+| 分类树 | 多「分类 / 类型 / 体系」 | 树状，每层写划分标准 |
+| 参数骨架 | 多「XX 效应 / XX 干涉」 | 骨架公式 + 「只有一列不同」的表 |
+
+**② 每个知识点的五要素**，其中第 2 栏是关键：
+
+| 要素 | 写什么 |
+|---|---|
+| 一句话定义 | 不用术语解释术语 |
+| **判断信号** | **题里出现什么，就该想到它** |
+| 易混项 | 「看到 A 容易想成 B，区别在 ___」 |
+| 对应题型 | 选择 / 判断 / 计算 / 简答 / 作图 |
+| 前置 | 依赖哪个更早的知识点 |
+
+学生缺的从来不是定义，是「看到题里出现什么，就该想到用这个」。所以第 2 栏写不出来，就说明这个知识点还没梳理通。
+
+**③ 三张成品图**——总览图、只有一列不同的对比表、看到 X 用 Y 的判断流程图。最后那张是考场上的救命稻草，它把「回忆」变成「走流程」。
+
+> **梳理和做题的时间比是 20% / 80%。** 梳理是为了让做题时知道该用哪块，不是为了写一份漂亮笔记。
+
+## 只在一种情况下才做取舍
+
+用户自己说了明确的截止时间。那时才启用：打六折算真实小时、按分值排优先级、标出该放弃什么、以及劝你睡觉。
+
+通宵的账是这么算的：多学 4 小时，换考场反应速度下降 30%，通常净亏。所以那时候它还是会说「剩下的放弃，去睡」。
+
+但那是**例外路径**，不是默认路径。
 
 ## 安装
 
@@ -208,9 +261,10 @@ git clone https://github.com/shizhanhshuo/exam-cram.git "$env:USERPROFILE\.workb
 
 | 文件 | 作用 |
 |---|---|
-| `00-作战计划.md` | 学科族判定、模式、时间块分配、目标、要放弃什么 |
-| `01-考点热力表.md` | 全部考点排序，划 60% / 80% / 95% 三条线 |
-| `01b-模型卡片/<模型>.md` | 按七步写的单模型讲解 + 符号表（零基础主材料） |
+| `00-作战计划.md` | 学科族判定、主线一句话、按什么顺序往下走 |
+| `01a-知识点全图.md` | **主线 + 五要素明细 + 分叉点 + 三张图**（主材料） |
+| `01b-考点热力表.md` | 考点排序，划 60% / 80% / 95% 三条线（有试卷才做） |
+| `01c-模型卡片/<模型>.md` | 按七步写的单模型讲解 + 符号表（零基础主材料） |
 | `02-讲题卡片/<考点>.md` | 逐题六段式讲解 |
 | `03-自测记录.md` | 每题对错、错因归类 |
 | `04-保底清单.md` | 考前 20 分钟只看这一页 |
@@ -257,13 +311,14 @@ Score = 0.35 × 频率 + 0.30 × 分值占比 + 0.20 × 新近度 + 0.15 × 章�
 exam-cram/
 ├── SKILL.md                  # 主流程 + 十一条红线
 ├── references/
-│   ├── subjects.md           # 五族学科分层：卡点、一看题、必画图、保底写法
+│   ├── knowledge-map.md      # 知识点梳理：主线、五要素、分叉点、三张图
+│   ├── subjects.md           # 五族学科分层：卡点、一秒题、必画图、保底写法
 │   ├── verification.md       # 材料校验：三级核验、冲突决策树、勘误模板
 │   ├── models.md             # 按模型过一遍的七步法（零基础核心）
 │   ├── foundations.md        # 零基础补课方法论、五层诊断阶梯
 │   ├── teaching.md           # 六段式讲题法
-│   ├── modes.md              # 时间分层、模式切换、睡眠规则
-│   ├── sourcing.md           # 双路径取题、可信度分级、假真题识别
+│   ├── modes.md              # 默认不问时间；时间分层仅作例外路径
+│   ├── sourcing.md           # 本校题库优先、双路径取题、假真题识别
 │   ├── analysis.md           # 考点标签、加权排序、分数线、错因分类
 │   └── optimization.md       # 自优化机制 + 每次实战的复盘记录
 └── assets/                   # 五份输出模板
@@ -271,9 +326,9 @@ exam-cram/
 
 四份最值得看：
 
-- `references/subjects.md` —— 五族学科各卡在哪一层、该画什么图、时间怎么分。**换学科前先看这份**
-- `references/verification.md` —— 课件出错时怎么判、怎么讲。含三条绝对禁止
-- `references/models.md` —— 按模型过的七步法，含九个波动光学模型的完整讲法、符号表规范、一秒题设计规则
+- `references/knowledge-map.md` —— 怎么把一门课压成一条主线 + 一张五要素表 + 一份分叉点清单。**换新科目先看这份**
+- `references/subjects.md` —— 五族学科各卡在哪一层、该画什么图、时间怎么分
+- `references/models.md` —— 按模型过的七步法，含九个波动光学模型的完整讲法
 - `references/optimization.md` —— 这个技能怎么长出来的。每次实战的卡点、归因、改法都在里面，包括失败的那些
 
 ## 许可
@@ -289,4 +344,4 @@ exam-cram/
 
 ---
 
-**English TL;DR** — exam-cram is an Agent Skill for last-minute exam prep. Give it a course and a deadline; **it checks your own university's exam archive first** (school + department + year-grade are three searchable fields, not background info), then falls back to textbook problems and cross-school papers. It ranks topics by `0.35×frequency + 0.30×marks + 0.20×recency + 0.15×chapter weight`, draws 60/80/95% score lines, then teaches each question in six passes — translation, placement, 30-second prerequisite, walkthrough with **common-pitfall callouts**, variant predictions, and a minimum-credit fallback. It routes to one of five subject archetypes (computational science / graph-based econ / memorization humanities / code engineering / mechanism-heavy medicine), each with its own probe format, required diagrams and answer scaffolding. Uploaded slides are treated as **unverified leads**: internal consistency and worked-example recomputation first, authoritative cross-check for load-bearing claims, conflict resolved through an explicit five-way decision tree — never silently teaching a wrong formula. It deliberately cuts your self-reported study time by 40%, tells you what to skip, and will tell you to go to sleep. MIT licensed.
+**English TL;DR** — exam-cram is an Agent Skill for exam prep. It **does not ask how many days you have left** — real studying is linear, not an hourly budget, and time-slicing only produced anxiety. Instead it first maps the course: one main thread (causal chain / process / classification tree / parameter skeleton), every knowledge point in five fields where the crucial one is *"what in the question tells you to use this"*, plus a separate list of the confusions that actually cost marks. Only if you volunteer a hard deadline does it switch to time-boxed triage: cut self-reported hours by 40%, rank by marks, tell you what to drop, tell you to sleep. It checks your own university's exam archive first (school + department + year are three searchable fields, not background info), then falls back to textbook problems. It routes to one of five subject archetypes, and treats uploaded slides as **unverified leads** — internal consistency and worked-example recomputation first, authoritative cross-check for load-bearing claims, conflict resolved through an explicit decision tree, never silently teaching a wrong formula. MIT licensed.
